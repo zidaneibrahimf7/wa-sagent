@@ -1,13 +1,46 @@
 'use client'
 
-import React from "react"
+import React, {useState, useEffect} from "react"
 import { useFormik } from "formik"
 
 import { Input } from "@/components/ui/input"
-
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from '@/components/ui/table'
 
+import { ArrowUpDown, ArrowUp, ArrowDown, MoreHorizontal } from "lucide-react"
+
+import moment from 'moment'
+
+import Loading from "@/components/Loading"
+
 export default function ContainersPage() {
+  const [container, setContainer] = useState({})
+  const [count, setCount] = useState(1)
+  const [currentPage, setPage] = useState(1)
+  const [limit, setLimit] = useState(20)
+
+  const [searchAccountListContainer, setSearchAccountListContainer] = useState('')
+
+  const getContainerList = async (page) => {
+    if (!page) page = currentPage
+    
+    let offset = (page === 1) ? 0 : ((page - 1) * limit)
+    let response = await fetch('/api/Container?act=list&offset=' + (searchAccountListContainer ? 0 : offset) + '&limit=' + limit)
+    const data = await response.json()
+    
+    // console.log(data, 'datss')
+    const { code, content } = data
+    
+    if (code === 0 && content.count) {
+      setContainer(content.results)
+      setCount(content.count)
+      return content.results
+    }
+
+    setPage(prev => prev ? page : prev)
+  }
+
   const formik = useFormik({
     initialValues: {
       search: ''
@@ -17,6 +50,10 @@ export default function ContainersPage() {
     }
   })
 
+  useEffect(() => {
+    getContainerList()
+  }, [])
+
   return (
     <main>
       <div className="container py-5 shadow-lg my-4 border rounded-md">
@@ -24,6 +61,22 @@ export default function ContainersPage() {
         <section className="">
           <div>
             <h1 className="text-2xl font-semibold">Containers</h1>
+            {
+              container.length ? 
+                <>
+                
+                </>
+                :
+                <>
+                  {
+                    instance.length === 0 ?
+                      <div className='flex items-center justify-center'>Data is not available</div>
+                      :
+                      <div className='flex items-center justify-center'><Loading /></div>
+                  }
+                {/* <div className='flex items-center justify-center'><Loading /></div> */}
+                </>
+            }
             <div className="flex justify-between">
               {/* Total Account in Containers */}
               <p className="text-md font-normal mt-3 pt-3">Total: 0 results</p>

@@ -17,10 +17,10 @@ const setupMenu = [
     title: 'Container',
     href: '/containers'
   },
-  {
-    title: 'Avatar Container',
-    href: '/avatarContainer'
-  },
+  // {
+  //   title: 'Avatar Container',
+  //   href: '/avatarContainer'
+  // },
   {
     title: 'Users',
     href: '/users'
